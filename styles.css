@@ -1379,3 +1379,76 @@ background:#0B7A3B;
 border-radius:10px;
 
 }
+
+/* ==========================================
+   Lightbox
+========================================== */
+
+.lightbox{
+
+position:fixed;
+
+inset:0;
+
+background:rgba(0,0,0,.85);
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+z-index:99999;
+
+animation:fadeUp .3s;
+
+}
+
+.lightbox-content img{
+
+max-width:90vw;
+
+max-height:90vh;
+
+border-radius:20px;
+
+box-shadow:0 30px 60px rgba(0,0,0,.45);
+
+}
+
+
+/* ==========================================
+   Floating Leaves
+========================================== */
+
+.leaf{
+
+position:fixed;
+
+top:-40px;
+
+pointer-events:none;
+
+z-index:999;
+
+animation:leafFall linear forwards;
+
+opacity:.85;
+
+}
+
+@keyframes leafFall{
+
+0%{
+
+transform:translateY(-40px) rotate(0deg);
+
+}
+
+100%{
+
+transform:translateY(110vh) rotate(540deg);
+
+}
+
+}
