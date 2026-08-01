@@ -477,3 +477,265 @@ card.style.transform=
 
 
 console.log("Part 2 Loaded Successfully");
+
+/* ==================================================
+   Kennedy Irrigation & Landscape Lighting
+   script.js
+   Part 3
+================================================== */
+
+
+/* ==========================================
+   Back To Top Button
+========================================== */
+
+const topButton = document.createElement("button");
+
+topButton.innerHTML = "⬆";
+
+topButton.className = "back-to-top";
+
+document.body.appendChild(topButton);
+
+window.addEventListener("scroll",()=>{
+
+if(window.scrollY>500){
+
+topButton.classList.add("show");
+
+}else{
+
+topButton.classList.remove("show");
+
+}
+
+});
+
+topButton.addEventListener("click",()=>{
+
+window.scrollTo({
+
+top:0,
+
+behavior:"smooth"
+
+});
+
+});
+
+
+/* ==========================================
+   Loading Screen
+========================================== */
+
+const loader=document.createElement("div");
+
+loader.className="loader";
+
+loader.innerHTML=`
+
+<div class="loader-logo">
+
+🌿
+
+</div>
+
+<div class="loader-text">
+
+Kennedy Irrigation
+
+</div>
+
+`;
+
+document.body.appendChild(loader);
+
+window.addEventListener("load",()=>{
+
+setTimeout(()=>{
+
+loader.classList.add("loader-hide");
+
+setTimeout(()=>{
+
+loader.remove();
+
+},700);
+
+},900);
+
+});
+
+
+/* ==========================================
+   Simple Mobile Navigation
+========================================== */
+
+const nav=document.querySelector(".navbar");
+
+const navLinks=document.querySelector(".nav-links");
+
+const menuButton=document.createElement("button");
+
+menuButton.className="menu-button";
+
+menuButton.innerHTML="☰";
+
+nav.appendChild(menuButton);
+
+menuButton.addEventListener("click",()=>{
+
+navLinks.classList.toggle("mobile-open");
+
+});
+
+
+/* ==========================================
+   Close Mobile Menu
+========================================== */
+
+document.querySelectorAll(".nav-links a").forEach(link=>{
+
+link.addEventListener("click",()=>{
+
+navLinks.classList.remove("mobile-open");
+
+});
+
+});
+
+
+/* ==========================================
+   Floating Call Button Wiggle
+========================================== */
+
+const callButton=document.querySelector(".floating-call");
+
+if(callButton){
+
+setInterval(()=>{
+
+callButton.animate([
+
+{transform:"rotate(0deg)"},
+
+{transform:"rotate(10deg)"},
+
+{transform:"rotate(-10deg)"},
+
+{transform:"rotate(0deg)"}
+
+],{
+
+duration:600,
+
+iterations:1
+
+});
+
+},12000);
+
+}
+
+
+/* ==========================================
+   Dynamic Footer Year
+========================================== */
+
+const footer=document.querySelector("footer");
+
+if(footer){
+
+const year=new Date().getFullYear();
+
+footer.querySelector("p").innerHTML=
+
+`© ${year} Kennedy Irrigation & Landscape Lighting`;
+
+}
+
+
+/* ==========================================
+   Hero Glow Effect
+========================================== */
+
+const hero=document.querySelector(".hero");
+
+let glow=0;
+
+setInterval(()=>{
+
+glow+=0.03;
+
+hero.style.filter=
+
+`brightness(${1+Math.sin(glow)*0.03})`;
+
+},60);
+
+
+/* ==========================================
+   Random Background Gradient
+========================================== */
+
+const gradients=[
+
+"linear-gradient(135deg,#0B7A3B,#157347)",
+
+"linear-gradient(135deg,#0E8A42,#2196F3)",
+
+"linear-gradient(135deg,#0B7A3B,#2E7D32)"
+
+];
+
+let gradientIndex=0;
+
+setInterval(()=>{
+
+const contact=document.querySelector("#contact");
+
+if(contact){
+
+gradientIndex++;
+
+if(gradientIndex>=gradients.length){
+
+gradientIndex=0;
+
+}
+
+contact.style.background=gradients[gradientIndex];
+
+}
+
+},15000);
+
+
+/* ==========================================
+   Keyboard Shortcut
+========================================== */
+
+document.addEventListener("keydown",(e)=>{
+
+if(e.key==="Home"){
+
+window.scrollTo({
+
+top:0,
+
+behavior:"smooth"
+
+});
+
+}
+
+});
+
+
+/* ==========================================
+   Welcome Message
+========================================== */
+
+console.log("%cWelcome to Kennedy Irrigation","color:#0B7A3B;font-size:18px;font-weight:bold;");
+
+console.log("Website Fully Loaded 🚀");
