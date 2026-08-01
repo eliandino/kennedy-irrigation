@@ -1347,3 +1347,35 @@ a,
 transition:all .35s ease;
 
 }
+
+/* Active Navigation Link */
+
+.nav-links a.active{
+
+color:#0B7A3B;
+
+font-weight:700;
+
+position:relative;
+
+}
+
+.nav-links a.active::after{
+
+content:"";
+
+position:absolute;
+
+left:0;
+
+bottom:-8px;
+
+width:100%;
+
+height:3px;
+
+background:#0B7A3B;
+
+border-radius:10px;
+
+}
