@@ -1930,3 +1930,12 @@ h2{
 
 }
 
+.active-review{
+
+transform:translateY(-10px) scale(1.03);
+
+box-shadow:0 25px 50px rgba(0,0,0,.18);
+
+transition:.4s ease;
+
+}
