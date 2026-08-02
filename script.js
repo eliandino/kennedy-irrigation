@@ -1,112 +1,103 @@
-/*====================================================
+/*==================================================
   Kennedy Irrigation
-  script.js
+  Modern Script v2.0
   Part 1
-====================================================*/
+==================================================*/
 
 "use strict";
 
-/*====================================================
-  DOM ELEMENTS
-====================================================*/
+/*==================================================
+  DOM CACHE
+==================================================*/
 
-const loader = document.getElementById("loader");
+const $ = (selector) => document.querySelector(selector);
+const $$ = (selector) => document.querySelectorAll(selector);
 
-const header = document.getElementById("header");
+const loader = $("#loader");
+const header = $("#header");
+const navMenu = $(".nav-menu");
+const hamburger = $("#hamburger");
+const backToTop = $("#backToTop");
+const heroBackground = $(".hero-background");
+const progressBar = document.createElement("div");
 
-const hamburger = document.getElementById("hamburger");
-
-const navMenu = document.querySelector(".nav-menu");
-
-const navLinks = document.querySelectorAll(".nav-menu a");
-
-const backToTop = document.getElementById("backToTop");
+const navLinks = [...$$(".nav-menu a")];
+const sections = [...$$("section")];
 
 
-/*====================================================
+/*==================================================
+  SCROLL PROGRESS BAR
+==================================================*/
+
+progressBar.id = "scroll-progress";
+
+Object.assign(progressBar.style, {
+
+    position: "fixed",
+    top: "0",
+    left: "0",
+    width: "0%",
+    height: "4px",
+    zIndex: "99999",
+    background:
+        "linear-gradient(90deg,#1e88e5,#00c853)",
+    transition: "width .15s linear"
+
+});
+
+document.body.appendChild(progressBar);
+
+
+/*==================================================
   LOADER
-====================================================*/
+==================================================*/
 
 window.addEventListener("load", () => {
+
+    if (!loader) return;
 
     setTimeout(() => {
 
         loader.style.opacity = "0";
         loader.style.visibility = "hidden";
 
-    }, 900);
+    }, 700);
 
 });
 
 
-/*====================================================
-  STICKY HEADER
-====================================================*/
-
-function updateHeader() {
-
-    if (window.scrollY > 60) {
-
-        header.classList.add("scrolled");
-
-    } else {
-
-        header.classList.remove("scrolled");
-
-    }
-
-}
-
-window.addEventListener("scroll", updateHeader);
-
-updateHeader();
-
-
-/*====================================================
+/*==================================================
   MOBILE MENU
-====================================================*/
+==================================================*/
 
-hamburger.addEventListener("click", () => {
+if (hamburger && navMenu) {
 
-    navMenu.classList.toggle("active");
+    hamburger.addEventListener("click", () => {
 
-    hamburger.classList.toggle("active");
+        hamburger.classList.toggle("active");
 
-});
-
-
-/*====================================================
-  CLOSE MENU WHEN LINK CLICKED
-====================================================*/
-
-navLinks.forEach(link => {
-
-    link.addEventListener("click", () => {
-
-        navMenu.classList.remove("active");
-
-        hamburger.classList.remove("active");
+        navMenu.classList.toggle("active");
 
     });
 
-});
+}
 
 
-/*====================================================
-  SMOOTH SCROLL
-====================================================*/
+/*==================================================
+  NAVIGATION LINKS
+==================================================*/
 
 navLinks.forEach(link => {
 
-    link.addEventListener("click", function (e) {
+    link.addEventListener("click", e => {
 
-        const targetID = this.getAttribute("href");
+        const href = link.getAttribute("href");
 
-        if (!targetID.startsWith("#")) return;
+        if (!href.startsWith("#")) return;
 
         e.preventDefault();
 
-        const target = document.querySelector(targetID);
+        const target = $(href);
 
         if (!target) return;
 
@@ -118,66 +109,116 @@ navLinks.forEach(link => {
 
         });
 
+        navMenu.classList.remove("active");
+
+        hamburger.classList.remove("active");
+
     });
 
 });
 
 
-/*====================================================
-  BACK TO TOP BUTTON
-====================================================*/
+/*==================================================
+  BACK TO TOP
+==================================================*/
 
-function toggleBackButton() {
+if (backToTop) {
 
-    if (window.scrollY > 500) {
+    backToTop.addEventListener("click", () => {
 
-        backToTop.classList.add("show");
+        window.scrollTo({
 
-    } else {
+            top: 0,
 
-        backToTop.classList.remove("show");
+            behavior: "smooth"
 
-    }
+        });
+
+    });
 
 }
 
-window.addEventListener("scroll", toggleBackButton);
 
-toggleBackButton();
-
-
-backToTop.addEventListener("click", () => {
-
-    window.scrollTo({
-
-        top: 0,
-
-        behavior: "smooth"
-
-    });
-
-});
-
-
-/*====================================================
-  ACTIVE NAV LINK
-====================================================*/
-
-const sections = document.querySelectorAll("section");
+/*==================================================
+  ONE SCROLL LISTENER
+==================================================*/
 
 window.addEventListener("scroll", () => {
+
+    const scroll = window.scrollY;
+
+    /*-------------------------
+      Sticky Header
+    -------------------------*/
+
+    header.classList.toggle(
+
+        "scrolled",
+
+        scroll > 60
+
+    );
+
+
+    /*-------------------------
+      Progress Bar
+    -------------------------*/
+
+    const maxScroll =
+        document.documentElement.scrollHeight -
+        window.innerHeight;
+
+    progressBar.style.width =
+        (scroll / maxScroll) * 100 + "%";
+
+
+    /*-------------------------
+      Back To Top
+    -------------------------*/
+
+    if (backToTop) {
+
+        backToTop.classList.toggle(
+
+            "show",
+
+            scroll > 450
+
+        );
+
+    }
+
+
+    /*-------------------------
+      Hero Parallax
+    -------------------------*/
+
+    if (heroBackground) {
+
+        heroBackground.style.transform =
+
+        `scale(1.08) translateY(${scroll * .25}px)`;
+
+    }
+
+
+    /*-------------------------
+      Active Navigation
+    -------------------------*/
 
     let current = "";
 
     sections.forEach(section => {
 
-        const top = section.offsetTop - 120;
+        if (
 
-        const height = section.offsetHeight;
+            scroll >=
 
-        if (window.scrollY >= top) {
+            section.offsetTop - 140
 
-            current = section.getAttribute("id");
+        ) {
+
+            current = section.id;
 
         }
 
@@ -185,39 +226,22 @@ window.addEventListener("scroll", () => {
 
     navLinks.forEach(link => {
 
-        link.classList.remove("active");
+        link.classList.toggle(
 
-        if (link.getAttribute("href") === "#" + current) {
+            "active",
 
-            link.classList.add("active");
+            link.getAttribute("href") === "#" + current
 
-        }
+        );
 
     });
 
 });
 
 
-/*====================================================
-  SMALL HERO PARALLAX
-====================================================*/
-
-const heroBackground = document.querySelector(".hero-background");
-
-window.addEventListener("scroll", () => {
-
-    if (!heroBackground) return;
-
-    const offset = window.scrollY * 0.35;
-
-    heroBackground.style.transform = `scale(1.08) translateY(${offset}px)`;
-
-});
-
-
-/*====================================================
+/*==================================================
   WINDOW RESIZE
-====================================================*/
+==================================================*/
 
 window.addEventListener("resize", () => {
 
@@ -231,88 +255,75 @@ window.addEventListener("resize", () => {
 
 });
 
-/*====================================================
-  Kennedy Irrigation
-  script.js
-  Part 2
-====================================================*/
 
-"use strict";
+/*==================================================
+  HELPER FUNCTIONS
+==================================================*/
 
-/*====================================================
-  ANIMATED COUNTERS
-====================================================*/
+function animate(element, keyframes, options) {
 
-const counters = document.querySelectorAll(".counter");
+    if (!element) return;
 
-const counterObserver = new IntersectionObserver((entries, observer) => {
+    element.animate(
 
-    entries.forEach(entry => {
+        keyframes,
 
-        if (!entry.isIntersecting) return;
+        options
 
-        const counter = entry.target;
-        const target = Number(counter.dataset.target);
+    );
 
-        let current = 0;
-
-        const increment = Math.max(1, Math.ceil(target / 120));
-
-        const timer = setInterval(() => {
-
-            current += increment;
-
-            if (current >= target) {
-
-                counter.textContent = target;
-
-                clearInterval(timer);
-
-            } else {
-
-                counter.textContent = current;
-
-            }
-
-        }, 18);
-
-        observer.unobserve(counter);
-
-    });
-
-}, {
-
-    threshold: 0.6
-
-});
-
-counters.forEach(counter => {
-
-    counterObserver.observe(counter);
-
-});
+}
 
 
-/*====================================================
-  SCROLL REVEAL
-====================================================*/
+function inViewport(element) {
 
-const revealItems = document.querySelectorAll(
-`
-.service-card,
-.about-image,
-.about-content,
-.stat-box,
-.why-card,
-.gallery-item,
-.review-card,
-.comparison-card,
-.contact-info,
-.contact-form
-`
+    const rect = element.getBoundingClientRect();
+
+    return (
+
+        rect.top <
+
+        window.innerHeight * .85
+
+    );
+
+}
+
+console.log(
+
+"%cKennedy Irrigation v2.0 Loaded",
+
+"color:#1e88e5;font-size:16px;font-weight:bold"
+
 );
 
-const revealObserver = new IntersectionObserver((entries) => {
+/*==================================================
+  Kennedy Irrigation
+  Modern Script v2.0
+  Part 2
+==================================================*/
+
+
+/*==================================================
+  SCROLL REVEAL
+==================================================*/
+
+const revealItems = [
+
+    ...$$(".service-card"),
+    ...$$(".about-image"),
+    ...$$(".about-content"),
+    ...$$(".stat-box"),
+    ...$$(".why-card"),
+    ...$$(".gallery-item"),
+    ...$$(".review-card"),
+    ...$$(".comparison-card"),
+    ...$$(".contact-info"),
+    ...$$(".contact-form")
+
+];
+
+const revealObserver = new IntersectionObserver(entries => {
 
     entries.forEach(entry => {
 
@@ -320,15 +331,17 @@ const revealObserver = new IntersectionObserver((entries) => {
 
         entry.target.classList.add("visible");
 
+        revealObserver.unobserve(entry.target);
+
     });
 
-}, {
+},{
 
-    threshold: .15
+    threshold:.15
 
 });
 
-revealItems.forEach(item => {
+revealItems.forEach(item=>{
 
     item.classList.add("fade-in");
 
@@ -337,295 +350,135 @@ revealItems.forEach(item => {
 });
 
 
-/*====================================================
-  SERVICE CARD HOVER
-====================================================*/
+/*==================================================
+  COUNTERS
+==================================================*/
 
-const serviceCards = document.querySelectorAll(".service-card");
+const counters = $$(".counter");
 
-serviceCards.forEach(card => {
+const counterObserver = new IntersectionObserver(entries=>{
 
-    card.addEventListener("mouseenter", () => {
+entries.forEach(entry=>{
 
-        card.style.transform = "translateY(-12px) scale(1.03)";
+if(!entry.isIntersecting) return;
 
-    });
+const counter = entry.target;
 
-    card.addEventListener("mouseleave", () => {
+const target = Number(counter.dataset.target);
 
-        card.style.transform = "";
+let value = 0;
 
-    });
+const speed = Math.max(1,target/80);
 
-});
+const timer = setInterval(()=>{
 
+value += speed;
 
-/*====================================================
-  LIGHTBOX
-====================================================*/
+if(value >= target){
 
-const galleryImages = document.querySelectorAll(".gallery-item img");
+counter.textContent = target;
 
-const lightbox = document.getElementById("lightbox");
+clearInterval(timer);
 
-const lightboxImage = document.getElementById("lightbox-image");
+}else{
 
-galleryImages.forEach(image => {
-
-    image.addEventListener("click", () => {
-
-        lightboxImage.src = image.src;
-
-        lightbox.classList.remove("hidden");
-
-        document.body.style.overflow = "hidden";
-
-    });
-
-});
-
-
-lightbox.addEventListener("click", () => {
-
-    lightbox.classList.add("hidden");
-
-    document.body.style.overflow = "";
-
-});
-
-
-document.addEventListener("keydown", e => {
-
-    if (e.key === "Escape") {
-
-        lightbox.classList.add("hidden");
-
-        document.body.style.overflow = "";
-
-    }
-
-});
-
-
-/*====================================================
-  CONTACT FORM
-====================================================*/
-
-const form = document.querySelector(".contact-form form");
-
-if (form) {
-
-    form.addEventListener("submit", e => {
-
-        e.preventDefault();
-
-        const inputs = form.querySelectorAll("input[required]");
-
-        let valid = true;
-
-        inputs.forEach(input => {
-
-            if (input.value.trim() === "") {
-
-                input.style.borderColor = "#ef4444";
-
-                valid = false;
-
-            } else {
-
-                input.style.borderColor = "";
-
-            }
-
-        });
-
-        if (!valid) {
-
-            alert("Please complete the required fields.");
-
-            return;
-
-        }
-
-        alert(
-            "Thank you! Your request has been received. We'll contact you shortly."
-        );
-
-        form.reset();
-
-    });
+counter.textContent = Math.floor(value);
 
 }
 
+},20);
 
-/*====================================================
-  BUTTON RIPPLE EFFECT
-====================================================*/
+counterObserver.unobserve(counter);
 
-const buttons = document.querySelectorAll(
+});
 
-".btn-primary,.btn-secondary,.btn-call,.btn-emergency"
+});
 
-);
+counters.forEach(counter=>{
 
-buttons.forEach(button => {
-
-    button.addEventListener("click", function(e){
-
-        const ripple = document.createElement("span");
-
-        ripple.style.position = "absolute";
-
-        ripple.style.width = "10px";
-
-        ripple.style.height = "10px";
-
-        ripple.style.borderRadius = "50%";
-
-        ripple.style.background = "rgba(255,255,255,.5)";
-
-        ripple.style.pointerEvents = "none";
-
-        ripple.style.left =
-            (e.offsetX - 5) + "px";
-
-        ripple.style.top =
-            (e.offsetY - 5) + "px";
-
-        ripple.style.transform = "scale(0)";
-
-        ripple.style.transition = ".6s";
-
-        this.appendChild(ripple);
-
-        requestAnimationFrame(() => {
-
-            ripple.style.transform = "scale(35)";
-
-            ripple.style.opacity = "0";
-
-        });
-
-        setTimeout(() => {
-
-            ripple.remove();
-
-        },600);
-
-    });
+counterObserver.observe(counter);
 
 });
 
 
-/*====================================================
-  FLOATING BUTTON PULSE
-====================================================*/
+/*==================================================
+  GALLERY LIGHTBOX
+==================================================*/
 
-const floatingButtons = document.querySelectorAll(
+const lightbox = $("#lightbox");
 
-".floating-call,.floating-facebook"
+const lightboxImage = $("#lightbox-image");
 
-);
+$$(".gallery-item img").forEach(image=>{
 
-setInterval(() => {
+image.addEventListener("click",()=>{
 
-    floatingButtons.forEach(button => {
+lightboxImage.src = image.src;
 
-        button.animate(
+lightbox.classList.remove("hidden");
 
-        [
-
-            {
-
-                transform:"scale(1)"
-
-            },
-
-            {
-
-                transform:"scale(1.12)"
-
-            },
-
-            {
-
-                transform:"scale(1)"
-
-            }
-
-        ],
-
-        {
-
-            duration:900
-
-        });
-
-    });
-
-},7000);
-
-
-/*====================================================
-  LAZY LOADING IMAGES
-====================================================*/
-
-const lazyImages = document.querySelectorAll("img");
-
-const imageObserver = new IntersectionObserver(entries => {
-
-    entries.forEach(entry => {
-
-        if (!entry.isIntersecting) return;
-
-        entry.target.style.opacity = "1";
-
-        imageObserver.unobserve(entry.target);
-
-    });
+document.body.style.overflow="hidden";
 
 });
 
-lazyImages.forEach(image => {
+});
 
-    image.style.opacity = ".2";
+if(lightbox){
 
-    image.style.transition = ".8s";
+lightbox.addEventListener("click",()=>{
 
-    imageObserver.observe(image);
+lightbox.classList.add("hidden");
+
+document.body.style.overflow="";
+
+});
+
+}
+
+document.addEventListener("keydown",e=>{
+
+if(e.key==="Escape"){
+
+lightbox.classList.add("hidden");
+
+document.body.style.overflow="";
+
+}
 
 });
 
 
-/*====================================================
+/*==================================================
   HERO CARD FLOAT
-====================================================*/
+==================================================*/
 
-const heroCard = document.querySelector(".hero-card");
+const heroCard = $(".hero-card");
 
 if(heroCard){
 
 setInterval(()=>{
 
-heroCard.animate(
+animate(
+
+heroCard,
 
 [
 
 {
 
-transform:"translateY(0)"
+transform:"translateY(0px)"
 
 },
 
 {
 
-transform:"translateY(-8px)"
+transform:"translateY(-10px)"
 
 },
 
 {
 
-transform:"translateY(0)"
+transform:"translateY(0px)"
 
 }
 
@@ -633,223 +486,398 @@ transform:"translateY(0)"
 
 {
 
-duration:2500
+duration:2400
 
-});
+}
+
+);
 
 },2600);
 
 }
 
-/*====================================================
-  Kennedy Irrigation
-  script.js
-  Part 3
-====================================================*/
 
-"use strict";
+/*==================================================
+  MOUSE PARALLAX
+==================================================*/
 
-/*====================================================
-  SCROLL PROGRESS BAR
-====================================================*/
+const hero = $(".hero");
 
-const progressBar = document.createElement("div");
+if(hero && heroCard){
 
-progressBar.style.position = "fixed";
-progressBar.style.top = "0";
-progressBar.style.left = "0";
-progressBar.style.height = "4px";
-progressBar.style.width = "0%";
-progressBar.style.background =
-"linear-gradient(90deg,#1e88e5,#00c853)";
-progressBar.style.zIndex = "99999";
-progressBar.style.transition = "width .15s linear";
+hero.addEventListener("mousemove",e=>{
 
-document.body.appendChild(progressBar);
+const x=(window.innerWidth/2-e.clientX)/35;
 
-window.addEventListener("scroll", () => {
+const y=(window.innerHeight/2-e.clientY)/35;
 
-    const scrollTop = window.scrollY;
+heroCard.style.transform=
 
-    const pageHeight =
-        document.documentElement.scrollHeight -
-        window.innerHeight;
+`translate(${x}px,${y}px)`;
 
-    const percent = (scrollTop / pageHeight) * 100;
+});
 
-    progressBar.style.width = percent + "%";
+hero.addEventListener("mouseleave",()=>{
+
+heroCard.style.transform="";
+
+});
+
+}
+
+
+/*==================================================
+  IMAGE FADE-IN
+==================================================*/
+
+const images = $$("img");
+
+const imageObserver = new IntersectionObserver(entries=>{
+
+entries.forEach(entry=>{
+
+if(!entry.isIntersecting) return;
+
+entry.target.style.opacity="1";
+
+entry.target.style.transform="scale(1)";
+
+imageObserver.unobserve(entry.target);
+
+});
+
+});
+
+images.forEach(image=>{
+
+image.style.opacity=".15";
+
+image.style.transform="scale(.97)";
+
+image.style.transition=".7s ease";
+
+imageObserver.observe(image);
 
 });
 
 
-/*====================================================
-  TYPEWRITER EFFECT
-====================================================*/
+/*==================================================
+  GALLERY HOVER
+==================================================*/
 
-const heroTitle = document.querySelector(".hero h1");
+$$(".gallery-item img").forEach(image=>{
 
-if (heroTitle) {
+image.addEventListener("mouseenter",()=>{
 
-    const originalText = heroTitle.textContent.trim();
+image.style.filter=
 
-    heroTitle.textContent = "";
+"brightness(1.05) saturate(1.15)";
 
-    let index = 0;
+});
 
-    function typeWriter() {
+image.addEventListener("mouseleave",()=>{
 
-        if (index < originalText.length) {
+image.style.filter="";
 
-            heroTitle.textContent += originalText.charAt(index);
+});
 
-            index++;
+});
 
-            setTimeout(typeWriter, 28);
 
-        }
+/*==================================================
+  SERVICE CARD TILT
+==================================================*/
 
-    }
+$$(".service-card").forEach(card=>{
 
-    setTimeout(typeWriter, 700);
+card.addEventListener("mousemove",e=>{
+
+const rect = card.getBoundingClientRect();
+
+const x = e.clientX - rect.left;
+
+const y = e.clientY - rect.top;
+
+const rotateY =
+
+((x/rect.width)-0.5)*12;
+
+const rotateX =
+
+((y/rect.height)-0.5)*-12;
+
+card.style.transform=
+
+`perspective(900px)
+rotateX(${rotateX}deg)
+rotateY(${rotateY}deg)
+translateY(-8px)`;
+
+});
+
+card.addEventListener("mouseleave",()=>{
+
+card.style.transform="";
+
+});
+
+});
+
+
+/*==================================================
+  BUTTON RIPPLE
+==================================================*/
+
+$$(".btn-primary,.btn-secondary,.btn-call,.btn-emergency")
+
+.forEach(button=>{
+
+button.style.position="relative";
+
+button.style.overflow="hidden";
+
+button.addEventListener("click",e=>{
+
+const ripple=document.createElement("span");
+
+Object.assign(ripple.style,{
+
+position:"absolute",
+
+left:e.offsetX+"px",
+
+top:e.offsetY+"px",
+
+width:"10px",
+
+height:"10px",
+
+borderRadius:"50%",
+
+background:"rgba(255,255,255,.45)",
+
+transform:"translate(-50%,-50%) scale(0)",
+
+transition:".6s",
+
+pointerEvents:"none"
+
+});
+
+button.appendChild(ripple);
+
+requestAnimationFrame(()=>{
+
+ripple.style.transform=
+
+"translate(-50%,-50%) scale(30)";
+
+ripple.style.opacity="0";
+
+});
+
+setTimeout(()=>{
+
+ripple.remove();
+
+},600);
+
+});
+
+});
+
+/*==================================================
+  Kennedy Irrigation
+  Modern Script v2.0
+  Part 3
+==================================================*/
+
+
+/*==================================================
+  CONTACT FORM
+==================================================*/
+
+const contactForm = $(".contact-form form");
+
+if(contactForm){
+
+contactForm.addEventListener("submit",e=>{
+
+e.preventDefault();
+
+const required =
+contactForm.querySelectorAll("[required]");
+
+let valid = true;
+
+required.forEach(field=>{
+
+field.style.borderColor="";
+
+if(!field.value.trim()){
+
+field.style.borderColor="#ef4444";
+
+valid=false;
+
+}
+
+});
+
+if(!valid){
+
+alert("Please complete all required fields.");
+
+return;
+
+}
+
+alert("Thank you! We'll contact you soon.");
+
+contactForm.reset();
+
+});
 
 }
 
 
-/*====================================================
-  MOUSE PARALLAX
-====================================================*/
+/*==================================================
+  FLOATING BUTTON PULSE
+==================================================*/
 
-const hero = document.querySelector(".hero");
+const floatingButtons = [
 
-const heroCard = document.querySelector(".hero-card");
+$(".floating-call"),
 
-if (hero && heroCard) {
+$(".floating-facebook")
 
-    hero.addEventListener("mousemove", (e) => {
+].filter(Boolean);
 
-        const x =
-            (window.innerWidth / 2 - e.clientX) / 35;
+setInterval(()=>{
 
-        const y =
-            (window.innerHeight / 2 - e.clientY) / 35;
+floatingButtons.forEach(button=>{
 
-        heroCard.style.transform =
-            `translate(${x}px,${y}px)`;
+animate(
 
-    });
+button,
 
-    hero.addEventListener("mouseleave", () => {
+[
 
-        heroCard.style.transform = "";
+{
 
-    });
+transform:"scale(1)"
+
+},
+
+{
+
+transform:"scale(1.12)"
+
+},
+
+{
+
+transform:"scale(1)"
 
 }
 
+],
 
-/*====================================================
-  AUTO TESTIMONIAL HIGHLIGHT
-====================================================*/
+{
 
-const reviews =
-document.querySelectorAll(".review-card");
+duration:900
+
+}
+
+);
+
+});
+
+},6000);
+
+
+/*==================================================
+  REVIEW SPOTLIGHT
+==================================================*/
+
+const reviews = [...$$(".review-card")];
 
 let reviewIndex = 0;
 
-if (reviews.length) {
+if(reviews.length){
 
-    setInterval(() => {
+setInterval(()=>{
 
-        reviews.forEach(card => {
+reviews.forEach(card=>{
 
-            card.style.transform = "";
-            card.style.boxShadow = "";
+card.classList.remove("active-review");
 
-        });
+});
 
-        reviews[reviewIndex].style.transform =
-            "scale(1.04)";
+reviews[reviewIndex].classList.add("active-review");
 
-        reviews[reviewIndex].style.boxShadow =
-            "0 20px 40px rgba(0,0,0,.18)";
+reviewIndex++;
 
-        reviewIndex++;
+if(reviewIndex>=reviews.length){
 
-        if (reviewIndex >= reviews.length) {
+reviewIndex=0;
 
-            reviewIndex = 0;
+}
 
-        }
-
-    }, 3500);
+},3500);
 
 }
 
 
-/*====================================================
+/*==================================================
   WATER PARTICLES
-====================================================*/
+==================================================*/
 
-const heroOverlay =
-document.querySelector(".hero-overlay");
+const overlay = $(".hero-overlay");
 
-if (heroOverlay) {
+if(overlay){
 
-    for (let i = 0; i < 25; i++) {
+const style = document.createElement("style");
 
-        const drop = document.createElement("div");
+style.textContent = `
 
-        drop.style.position = "absolute";
-        drop.style.width = "6px";
-        drop.style.height = "6px";
-        drop.style.borderRadius = "50%";
-        drop.style.background =
-            "rgba(255,255,255,.35)";
+.water-drop{
 
-        drop.style.left =
-            Math.random() * 100 + "%";
+position:absolute;
 
-        drop.style.top =
-            Math.random() * 100 + "%";
+width:6px;
 
-        drop.style.animation =
-            `floatDrop ${5 + Math.random() * 5}s linear infinite`;
+height:6px;
 
-        heroOverlay.appendChild(drop);
+border-radius:50%;
 
-    }
+background:rgba(255,255,255,.35);
+
+animation:waterFloat linear infinite;
+
+pointer-events:none;
 
 }
 
-
-/*====================================================
-  CREATE PARTICLE ANIMATION
-====================================================*/
-
-const particleStyle =
-document.createElement("style");
-
-particleStyle.textContent = `
-
-@keyframes floatDrop{
+@keyframes waterFloat{
 
 0%{
 
-transform:translateY(0);
+transform:translateY(40px);
 
 opacity:0;
 
 }
 
-30%{
+20%{
 
-opacity:.6;
+opacity:.7;
 
 }
 
 100%{
 
-transform:translateY(-120px);
+transform:translateY(-140px);
 
 opacity:0;
 
@@ -859,99 +887,126 @@ opacity:0;
 
 `;
 
-document.head.appendChild(particleStyle);
+document.head.appendChild(style);
 
+for(let i=0;i<18;i++){
 
-/*====================================================
-  BEFORE / AFTER IMAGE
-====================================================*/
+const drop=document.createElement("div");
 
-const comparisonImage =
-document.querySelector(".comparison-image img");
+drop.className="water-drop";
 
-if (comparisonImage) {
+drop.style.left=Math.random()*100+"%";
 
-    comparisonImage.addEventListener("mouseenter", () => {
+drop.style.top=Math.random()*100+"%";
 
-        comparisonImage.style.transform =
-            "scale(1.05)";
+drop.style.animationDuration=
 
-        comparisonImage.style.transition =
-            ".5s";
+4+Math.random()*5+"s";
 
-    });
+drop.style.animationDelay=
 
-    comparisonImage.addEventListener("mouseleave", () => {
+Math.random()*5+"s";
 
-        comparisonImage.style.transform =
-            "scale(1)";
+overlay.appendChild(drop);
 
-    });
+}
 
 }
 
 
-/*====================================================
-  IMAGE HOVER ZOOM
-====================================================*/
+/*==================================================
+  IMAGE PRELOAD
+==================================================*/
 
-document.querySelectorAll(".gallery-item img")
+[
 
-.forEach(image => {
+"images/hero.jpg",
 
-    image.addEventListener("mouseenter", () => {
+"images/about.jpg",
 
-        image.style.filter =
-            "brightness(1.05) saturate(1.15)";
+"images/project1.jpg"
 
-    });
+].forEach(src=>{
 
-    image.addEventListener("mouseleave", () => {
+const img=new Image();
 
-        image.style.filter = "";
-
-    });
+img.src=src;
 
 });
 
 
-/*====================================================
-  PRELOAD HERO IMAGE
-====================================================*/
-
-const preloadImage = new Image();
-
-preloadImage.src = "images/hero.jpg";
-
-
-/*====================================================
+/*==================================================
   PERFORMANCE
-====================================================*/
+==================================================*/
 
-window.addEventListener("pageshow", () => {
+window.addEventListener("pageshow",()=>{
 
-    console.log(
-        "Kennedy Irrigation Website Ready"
-    );
+console.log(
+
+"✔ Assets Loaded"
+
+);
 
 });
 
 
-/*====================================================
-  DEVELOPER CREDIT
-====================================================*/
+/*==================================================
+  OPTIONAL EASTER EGG
+==================================================*/
+
+let logoClicks=0;
+
+const logo=$(".logo");
+
+if(logo){
+
+logo.addEventListener("click",()=>{
+
+logoClicks++;
+
+if(logoClicks===7){
+
+alert(
+
+"💧 Kennedy Irrigation\nBuilt with ❤️ by Eli Andino"
+
+);
+
+logoClicks=0;
+
+}
+
+});
+
+}
+
+
+/*==================================================
+  DEVELOPER BANNER
+==================================================*/
 
 console.log(`
 
-==============================================
-
-Kennedy Irrigation & Landscape Lighting
-
-Designed by Eli Andino
-
-Powered by HTML • CSS • JavaScript
-
-==============================================
+╔══════════════════════════════════════╗
+║                                      ║
+║   Kennedy Irrigation Website v2.0    ║
+║                                      ║
+║   Developed by Eli Andino            ║
+║   HTML • CSS • JavaScript            ║
+║                                      ║
+╚══════════════════════════════════════╝
 
 `);
 
+
+/*==================================================
+  WEBSITE INITIALIZER
+==================================================*/
+
+function initializeSite(){
+
+console.log("Initialization Complete");
+
+}
+
+initializeSite();
